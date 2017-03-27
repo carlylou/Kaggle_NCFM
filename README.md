@@ -1,3 +1,10 @@
+# Changes to make
+
+1.add more pre-trained model like Resnet50 and VGG16 to train on the competition data
+
+2.use the ensemble model of these trained models
+
+－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－
 # Kaggle_NCFM
 Using Keras+TensorFlow to solve NCFM-Leadboard Top 5%
 
