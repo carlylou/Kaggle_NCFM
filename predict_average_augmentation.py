@@ -1,3 +1,4 @@
+#--coding:utf-8--#
 from keras.models import load_model
 import os
 from keras.preprocessing.image import ImageDataGenerator
@@ -14,8 +15,8 @@ nbr_augmentation = 5
 FishNames = ['ALB', 'BET', 'DOL', 'LAG', 'NoF', 'OTHER', 'SHARK', 'YFT']
 
 #root_path = '/Users/pengpai/Desktop/python/DeepLearning/Kaggle/NCFM'
-root_path = '/data1/home/waynema/popeyepeng/NCFM'
-weights_path = os.path.join(root_path, 'weights.h5')
+root_path = '/home/cyang/Kaggle_NCFM-master'
+weights_path = os.path.join(root_path, 'InceptionV3_weights.h5')
 
 test_data_dir = os.path.join(root_path, 'data/test_stg1/')
 
@@ -50,13 +51,16 @@ for idx in range(nbr_augmentation):
     print('Begin to predict for testing data ...')
     if idx == 0:
         predictions = InceptionV3_model.predict_generator(test_generator, nbr_test_samples)
+        predictions = predictions.clip(min=0.005, max=0.995)#trick值调整
     else:
-        predictions += InceptionV3_model.predict_generator(test_generator, nbr_test_samples)
+        tmp = InceptionV3_model.predict_generator(test_generator, nbr_test_samples)#trick值调整
+        tmp = tmp.clip(min=0.005, max=0.995)
+        predictions += tmp
 
 predictions /= nbr_augmentation
 
 print('Begin to write submission file ..')
-f_submit = open(os.path.join(root_path, 'submit.csv'), 'w')
+f_submit = open(os.path.join(root_path, 'newInceptionV3_submit.csv'), 'w')
 f_submit.write('image,ALB,BET,DOL,LAG,NoF,OTHER,SHARK,YFT\n')
 for i, image_name in enumerate(test_image_list):
     pred = ['%.6f' % p for p in predictions[i, :]]

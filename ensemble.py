@@ -9,7 +9,7 @@ import numpy as np
 
 def create_submission(root_path, test_image_list, predictions):
 	print('Begin to write submission file ..')
-	f_submit = open(os.path.join(root_path, 'submit.csv'), 'w')
+	f_submit = open(os.path.join(root_path, 'ensem_submit.csv'), 'w')
 	f_submit.write('image,ALB,BET,DOL,LAG,NoF,OTHER,SHARK,YFT\n')
 	for i, image_name in enumerate(test_image_list):
 		pred = ['%.6f' % p for p in predictions[i, :]]
@@ -22,11 +22,11 @@ def create_submission(root_path, test_image_list, predictions):
 
 
 def merge_several_folds_mean(data, nfolds):
-	a = np.array(data[0])
+	arr_pred = data[0]
 	for i in range(1, nfolds):
-		a += np.array(data[i])
-	a /= nfolds
-	return a.tolist()
+		arr_pred += data[i]
+	arr_pred /= nfolds
+	return arr_pred
 
 img_width = 299
 img_height = 299
@@ -35,7 +35,7 @@ nbr_test_samples = 1000
 
 FishNames = ['ALB', 'BET', 'DOL', 'LAG', 'NoF', 'OTHER', 'SHARK', 'YFT']
 
-root_path = '/Users/pengpai/Desktop/python/DeepLearning/Kaggle/NCFM'
+root_path = '/home/cyang/Kaggle_NCFM-master'
 
 # test data:
 test_data_dir = os.path.join(root_path, 'data/test_stg1/')
@@ -50,12 +50,12 @@ test_generator = test_datagen.flow_from_directory(
         class_mode = None)
 test_image_list = test_generator.filenames
 
-model_name = ['inception', 'resnet', 'vgg16']
+model_name = ['InceptionV3_weights.h5', 'ResNet50_weights.h5', 'VGG16_weights.h5']
 y_result = []
 
 for m_name in model_name:
 	# model weights path
-	weights_path = os.path.join(root_path, m_name, 'weights.h5')
+	weights_path = os.path.join(root_path, m_name)
 	print('Loading model and weights from training process ...')
 	model = load_model(weights_path)
 	print('Begin to predict for testing data ...')
